@@ -1,14 +1,19 @@
 package course.maplocation;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 /**
  * An Activity that maps a location from an address given by the user.
@@ -24,12 +29,18 @@ public class MapLocationActivity extends Activity {
      */
     private EditText mAddrText;
 
+    private EditText mEditTextReveal;
+
+    private boolean isEditTextVisible;
+
+    private ImageButton mAddButton;
+
     /**
      * Hook method called when a new instance of Activity is created.
      * One time initialization code goes here, e.g., UI layout and
      * class scope variable initialization.
      *
-     * @param Bundle object that contains saved state information.
+     * @param savedInstanceState that contains saved state information.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +53,10 @@ public class MapLocationActivity extends Activity {
 
         // Cache the EditText object in a field.
         mAddrText = (EditText) findViewById(R.id.location);
+        mAddButton = (ImageButton) findViewById(R.id.btn_add);
+        mEditTextReveal = (EditText) findViewById(R.id.location);
+        mEditTextReveal.setVisibility(View.INVISIBLE);
+        isEditTextVisible = false;
     }
 
     /**
@@ -125,7 +140,7 @@ public class MapLocationActivity extends Activity {
      * Called by the Android Activity framework when the user clicks
      * the "Show Map" button.
      */
-    public void showMap(View v) {
+    public void showMap() {
         try {
             // Get the address entered by the user.
             String address = mAddrText.getText().toString();
@@ -156,6 +171,53 @@ public class MapLocationActivity extends Activity {
             e.printStackTrace();
         }
     }
+
+    public void addAddress(View v) {
+        Animatable mAnimatable;
+        if (!isEditTextVisible) {
+            revealEditText(mEditTextReveal);
+            mEditTextReveal.requestFocus();
+            mAddButton.setImageResource(R.drawable.icon_morph);
+            mAnimatable = (Animatable) (mAddButton).getDrawable();
+            mAnimatable.start();
+
+        } else {
+            hideEditText(mEditTextReveal);
+            mAddButton.setImageResource(R.drawable.icon_morph_reverse);
+            mAnimatable = (Animatable) (mAddButton).getDrawable();
+            mAnimatable.start();
+            showMap();
+        }
+    }
+
+
+    public void revealEditText (EditText text) {
+        int cx = text.getRight() - 30;
+        int cy = text.getBottom() - 60;
+        int finalRadius = Math.max(text.getWidth(), text.getHeight());
+        Animator anim = ViewAnimationUtils.createCircularReveal(text, cx, cy, 0, finalRadius);
+        text.setVisibility(View.VISIBLE);
+        isEditTextVisible = true;
+        anim.start();
+    }
+
+
+    public void hideEditText(final EditText text) {
+        int cx = text.getRight() - 30;
+        int cy = text.getBottom() - 60;
+        int initialRadius = text.getWidth();
+        Animator anim = ViewAnimationUtils.createCircularReveal(text, cx, cy, initialRadius, 0);
+        anim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                text.setVisibility(View.INVISIBLE);
+            }
+        });
+        isEditTextVisible = false;
+        anim.start();
+    }
+
 
     /**
      * Hide the keyboard after a user has finished typing the acronym

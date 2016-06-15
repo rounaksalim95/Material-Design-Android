@@ -1,15 +1,27 @@
 package course.examples;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.drawable.Animatable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 /**
  * An Activity that maps a location from an address of a contact.
@@ -26,6 +38,21 @@ public class MapLocationFromContactsActivity extends Activity {
     private static final int PICK_CONTACT_REQUEST = 0;
 
     /**
+     *  Request code for READ_CONTACTS.
+     */
+    private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 1;
+
+    /**
+     * Intent to hold data that comes from contact
+     */
+    private static Intent contactData;
+
+    /**
+     * Holds reference to the floating action button for animations
+     */
+    private static ImageButton mAddButton;
+
+    /**
      * Hook method called when a new instance of Activity is created.
      * One time initialization code goes here, e.g., UI layout.
      *
@@ -39,6 +66,27 @@ public class MapLocationFromContactsActivity extends Activity {
 
         // Set the default layout.
         setContentView(R.layout.main);
+
+        mAddButton = (ImageButton) findViewById(R.id.addButton);
+
+        setupWindowAnimations();
+    }
+
+    private void setupWindowAnimations() {
+        /*Explode explode = new Explode();
+        explode.setDuration(1000);
+        getWindow().setExitTransition(explode);*/
+
+        Slide slide = new Slide();
+        slide.setDuration(1000);
+        getWindow().setExitTransition(slide);
+
+        /*Fade fade = new Fade();
+        fade.setDuration(3000);
+        getWindow().setExitTransition(fade);*/
+
+        /*Fade fade = (Fade) TransitionInflater.from(this).inflateTransition(R.transition.activity_fade);
+        getWindow().setExitTransition(fade);*/
     }
 
     /**
@@ -124,6 +172,11 @@ public class MapLocationFromContactsActivity extends Activity {
      */
     public void findAddress(View v) {
         try {
+            // Animation that morphs the design of the floating action button
+            mAddButton.setImageResource(R.drawable.icon_morph);
+            Animatable mAnimatable = (Animatable) (mAddButton).getDrawable();
+            mAnimatable.start();
+
             // Create a new Intent that matches with the
             // Contacts ContentProvider.
             Intent intent =
@@ -134,8 +187,10 @@ public class MapLocationFromContactsActivity extends Activity {
             // prompt the user to pick a contact and then return the
             // Uri for the selected contact via the onActivityResult()
             // hook method.
+            Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(this).toBundle();
             startActivityForResult(intent,
-                    PICK_CONTACT_REQUEST);
+                    PICK_CONTACT_REQUEST, bundle);
+            // overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -155,53 +210,80 @@ public class MapLocationFromContactsActivity extends Activity {
         // the request code is what we're expecting.
         if (resultCode == Activity.RESULT_OK
                 && requestCode == PICK_CONTACT_REQUEST) {
+            // Initialize contactData intent for use later if permission not granted
+            contactData = data;
             // Create a Runnable so the (potentially) long-duration
             // getAddressFromContact() method can run without blocking
             // the UI Thread.
-            final Runnable getAndDisplayAddressFromContact =
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            // Extract the address from the contact record
-                            // indicated by the Uri associated with the
-                            // Intent.
-                            final String address =
-                                    getAddressFromContact(data.getData());
-
-                            runOnUiThread(new Runnable() {
-                                public void run() {
-                                    // Launch the activity by sending
-                                    // an intent.  Android will choose
-                                    // the right one or let the user
-                                    // choose if more than one
-                                    // Activity can handle it.
-
-                                    // Create an Intent that will
-                                    // launch the "Maps" app.
-                                    final Intent geoIntent =
-                                            makeGeoIntent(address);
-
-                                    // Check to see if there's a Map
-                                    // app to handle the "geo" intent.
-                                    if (geoIntent.resolveActivity
-                                            (getPackageManager()) != null)
-                                        startActivity(geoIntent);
-                                    else
-                                        // Start the Browser app
-                                        // instead.
-                                        startActivity(makeMapsIntent(address));
-                                }
-                            });
-                        }
-                    };
-            // Create a new Thread to get the address from the contact
-            // and launch the appropriate Activity to display the
-            // address.
-            new Thread(getAndDisplayAddressFromContact).start();
-            // BTW, if you don't want to use a separate Thread just
-            // say:
-            // getAndDisplayAddressFromContact.run();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                    checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+            } else {
+                displayMap(data);
+            }
         }
+    }
+
+    public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                displayMap(contactData);
+            } else {
+                Toast.makeText(this, "Permission to read contact data was not given.",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    /**
+     * Method that displays the map after gaining READ_CONTACTS permission from the user.
+     * @param data Intent that holds the data of the contact
+     */
+    private void displayMap(final Intent data) {
+        final Runnable getAndDisplayAddressFromContact =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // Extract the address from the contact record
+                        // indicated by the Uri associated with the
+                        // Intent.
+                        final String address =
+                                getAddressFromContact(data.getData());
+
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                // Launch the activity by sending
+                                // an intent.  Android will choose
+                                // the right one or let the user
+                                // choose if more than one
+                                // Activity can handle it.
+
+                                // Create an Intent that will
+                                // launch the "Maps" app.
+                                final Intent geoIntent =
+                                        makeGeoIntent(address);
+
+                                // Check to see if there's a Map
+                                // app to handle the "geo" intent.
+                                if (geoIntent.resolveActivity
+                                        (getPackageManager()) != null)
+                                    startActivity(geoIntent);
+                                else
+                                    // Start the Browser app
+                                    // instead.
+                                    startActivity(makeMapsIntent(address));
+                            }
+                        });
+                    }
+                };
+
+        // Create a new Thread to get the address from the contact
+        // and launch the appropriate Activity to display the
+        // address.
+        new Thread(getAndDisplayAddressFromContact).start();
+        // BTW, if you don't want to use a separate Thread just
+        // say:
+        // getAndDisplayAddressFromContact.run();
     }
 
     /**

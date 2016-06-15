@@ -1,15 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:gravity="center">
 
-    <Button android:id="@+id/mapButton"
-        android:layout_gravity="bottom"
+    <TextView
+        android:id="@+id/text1"
+        android:text="Please touch the floating action button to select a contact."
+        android:textSize="24dp"
+        android:gravity="center"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:background="@drawable/btn_background"
+        android:id="@+id/addButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="end"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="7dp"
+        android:elevation="1dp"
+        android:src="@drawable/icon_add"
         android:onClick="findAddress"
-        android:layout_height="wrap_content"
-        android:text="@string/findAddress">
-    </Button>
-</LinearLayout>
+        android:layout_below="@+id/text1"
+        android:layout_centerHorizontal="true"/>
+
+</RelativeLayout>
 

@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+
 /**
  * An Activity that maps a location from an address given by the user.
  */
@@ -24,16 +25,31 @@ public class MapLocationActivity extends Activity {
      */
     private String TAG = getClass().getSimpleName();
 
+
     /**
      * Address entered by the user.
      */
     private EditText mAddrText;
 
+
+    /**
+     * Holds a reference to the EditText
+     */
     private EditText mEditTextReveal;
 
+
+    /**
+     * Keeps track of whether the EditText is visible
+     */
     private boolean isEditTextVisible;
 
+
+    /**
+     * Holds a reference to the ImageButton that is used as a
+     * floating action button
+     */
     private ImageButton mAddButton;
+
 
     /**
      * Hook method called when a new instance of Activity is created.
@@ -51,13 +67,16 @@ public class MapLocationActivity extends Activity {
         // Set the default layout.
         setContentView(R.layout.main);
 
-        // Cache the EditText object in a field.
-        mAddrText = (EditText) findViewById(R.id.location);
+        // Cache the EditText and ImageButton objects in their
+        // respective fields.
         mAddButton = (ImageButton) findViewById(R.id.btn_add);
         mEditTextReveal = (EditText) findViewById(R.id.location);
+
+        // Make EditText invisible and set the boolean accordingly
         mEditTextReveal.setVisibility(View.INVISIBLE);
         isEditTextVisible = false;
     }
+
 
     /**
      * Hook method called after onCreate() or after onRestart() (when
@@ -71,6 +90,7 @@ public class MapLocationActivity extends Activity {
         super.onStart();
         Log.i(TAG, "The activity is about to become visible.");
     }
+
 
     /**
      * Hook method called after onRestoreStateInstance(Bundle) only if
@@ -87,6 +107,7 @@ public class MapLocationActivity extends Activity {
         Log.i(TAG, "The activity has become visible (it is now \"resumed\")");
     }
 
+
     /**
      * Hook method called when an Activity loses focus but is still
      * visible in background. May be followed by onStop() or
@@ -102,6 +123,7 @@ public class MapLocationActivity extends Activity {
                 "Another activity is taking focus (this activity is about to be \"paused\")");
     }
 
+
     /**
      * Called when Activity is no longer visible.  Release resources
      * that may cause memory leak. Save instance state
@@ -112,6 +134,7 @@ public class MapLocationActivity extends Activity {
         super.onStop();
         Log.i(TAG, "The activity is no longer visible (it is now \"stopped\")");
     }
+
 
     /**
      * Hook method called when user restarts a stopped activity.  Is
@@ -125,6 +148,7 @@ public class MapLocationActivity extends Activity {
         Log.d(TAG, "The activity is about to be restarted()");
     }
 
+
     /**
      * Hook method that gives a final chance to release resources and
      * stop spawned threads.  onDestroy() may not always be
@@ -135,6 +159,7 @@ public class MapLocationActivity extends Activity {
         super.onDestroy();
         Log.i(TAG, "The activity is about to be destroyed.");
     }
+
 
     /**
      * Called by the Android Activity framework when the user clicks
@@ -172,7 +197,12 @@ public class MapLocationActivity extends Activity {
         }
     }
 
-    public void addAddress(View v) {
+
+    /**
+     * Reveals or hides the EditText as required
+     * @param view The view
+     */
+    public void addAddress(View view) {
         Animatable mAnimatable;
         if (!isEditTextVisible) {
             revealEditText(mEditTextReveal);
@@ -191,6 +221,10 @@ public class MapLocationActivity extends Activity {
     }
 
 
+    /**
+     * Reveals the EditText
+     * @param text EditText to be revealed
+     */
     public void revealEditText (EditText text) {
         int cx = text.getRight() - 30;
         int cy = text.getBottom() - 60;
@@ -202,6 +236,10 @@ public class MapLocationActivity extends Activity {
     }
 
 
+    /**
+     * Hides the EditText
+     * @param text EditText to be hidden
+     */
     public void hideEditText(final EditText text) {
         int cx = text.getRight() - 30;
         int cy = text.getBottom() - 60;
@@ -243,6 +281,7 @@ public class MapLocationActivity extends Activity {
                 Uri.parse("geo:0,0?q="
                         + address));
     }
+
 
     /**
      * Factory method that returns an Intent that designates the

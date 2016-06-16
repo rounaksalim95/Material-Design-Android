@@ -5,12 +5,16 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.URLUtil;
 import android.widget.EditText;
@@ -304,10 +308,43 @@ public class MainActivity
 
 
     /**
+     * Called by the Android Activity framework when the user clicks
+     * + floating action button.
+     * @param view The view
+     */
+    public void addUrl(View view) {
+        if (!isEditTextVisible) {
+            revealEditText(mUrlEditText);
+            mUrlEditText.requestFocus();
+
+            // Rotate the FAB from + to X
+            int animRedId = R.anim.fab_rotate_forward;
+
+            // Load and start the animation
+            mAddFab.startAnimation(
+                    AnimationUtils.loadAnimation(this, animRedId));
+
+            // Displays the download FAB
+            animateFab(mDownloadFab);
+
+        } else {
+            hideEditText(mUrlEditText);
+
+            // Rotate the FAB from X to +
+            int animRedId = R.anim.fab_rotate_backward;
+
+            // Load and start the animation
+            mAddFab.startAnimation(
+                    AnimationUtils.loadAnimation(this, animRedId));
+        }
+    }
+
+
+    /**
      * Reveals the EditText using the animations
      * @param text EditText to be revealed
      */
-    public void revealEditText (EditText text) {
+    private void revealEditText (EditText text) {
         int cx = text.getRight() - 30;
         int cy = text.getBottom() - 60;
         int finalRadius = Math.max(text.getWidth(), text.getHeight());
@@ -322,7 +359,7 @@ public class MainActivity
      * Hides the EditText using animations
      * @param text EditText to be hidden
      */
-    public void hideEditText(final EditText text) {
+    private void hideEditText(final EditText text) {
         int cx = text.getRight() - 30;
         int cy = text.getBottom() - 60;
         int initialRadius = text.getWidth();
@@ -332,9 +369,25 @@ public class MainActivity
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 text.setVisibility(View.INVISIBLE);
+
+                // Clears the text when the user touches the X FAB
+                text.getText().clear();
             }
         });
         isEditTextVisible = false;
         anim.start();
+    }
+
+
+    /**
+     * FAB animator that displays the FAB
+     * @param fab The FAB to be displayed
+     */
+    private void animateFab(FloatingActionButton fab) {
+        fab.show();
+        fab.animate()
+                .translationY(0)
+                .setInterpolator(new DecelerateInterpolator(2))
+                .start();
     }
 }

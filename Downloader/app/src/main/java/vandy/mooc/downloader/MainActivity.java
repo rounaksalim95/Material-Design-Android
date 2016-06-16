@@ -6,11 +6,16 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.design.widget.FloatingActionButton;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.URLUtil;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import vandy.mooc.downloader.framework.views.InputPanelView;
 
 /**
  * A main Activity that prompts the user for a URL to an image and
@@ -18,7 +23,8 @@ import android.widget.Toast;
  * view it.
  */
 public class MainActivity
-        extends ActivityBase {
+        extends ActivityBase
+        implements InputPanelView.InputListener {
     /**
      * A value that uniquely identifies the request to download an
      * image.
@@ -49,6 +55,14 @@ public class MainActivity
     private final static String mDefaultUrl =
             "http://www.dre.vanderbilt.edu/~schmidt/robot.png";
 
+    private String enteredUrl;
+
+    private InputPanelView mInputPanel;
+
+    private FloatingActionButton mAddFab;
+
+    private FloatingActionButton mDownloadFab;
+
     /**
      * Hook method called when a new instance of Activity is
      * created. One time initialization code goes here, e.g., UI
@@ -68,10 +82,52 @@ public class MainActivity
         // TODO -- you fill in here.
         setContentView(R.layout.activity_main);
 
-        // Cache the EditText that holds the urls entered by the
+        /*// Cache the EditText that holds the urls entered by the
         // user (if any).
         // TODO -- you fill in here.
-        mUrlEditText = (EditText) findViewById(R.id.url);
+        mUrlEditText = (EditText) findViewById(R.id.url);*/
+
+        mInputPanel = (InputPanelView) findViewById(R.id.input_panel);
+
+        mAddFab = (FloatingActionButton) findViewById(R.id.add_fab);
+        assert mAddFab != null;
+        mAddFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showInputPanel(!mInputPanel.isPanelShown());
+            }
+        });
+
+        mDownloadFab = (FloatingActionButton) findViewById(R.id.download_fab);
+    }
+
+    public void showInputPanel(boolean show) {
+        if (show != mInputPanel.isPanelShown()) {
+            mInputPanel.show(show);
+
+            // Rotate FAB from + to x or from x to +.
+            int animResId = show
+                            ? R.anim.fab_rotate_forward
+                    : R.anim.fab_rotate_backward;
+
+            // Load and start the animation.
+            mAddFab.startAnimation(
+                    AnimationUtils.loadAnimation(this, animResId));
+        }
+    }
+
+    public void onInputReceived(String text) {
+        if (!text.isEmpty()) {
+            // Save the entered Url
+            enteredUrl = text;
+        }
+
+        // Hide the input panel.
+        showInputPanel(false);
+    }
+
+    public void onInputCancelled() {
+        showInputPanel(false);
     }
 
     /**

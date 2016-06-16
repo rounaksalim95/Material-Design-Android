@@ -5,6 +5,7 @@
     <string name="defaultURL">http://www.dre.vanderbilt.edu/~schmidt/robot.png</string>
     <string name="enter_url">Enter URL</string>
     <string name="ok_button">OK</string>
+    <string name="input_url_hint">Enter URL</string>
 
     <!-- M permission request strings (only used for debugging) -->
     <string name="read_write_permission">External storage read/write permission is required for LeakCanary to save detected memory leaks.</string>

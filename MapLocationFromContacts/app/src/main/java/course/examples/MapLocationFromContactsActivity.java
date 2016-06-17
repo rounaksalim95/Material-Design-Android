@@ -48,12 +48,6 @@ public class MapLocationFromContactsActivity extends Activity {
 
 
     /**
-     * Intent to hold data that comes from contact
-     */
-    private static Intent contactData;
-
-
-    /**
      * Holds reference to the floating action button for animations
      */
     private static ImageButton mAddButton;
@@ -210,9 +204,6 @@ public class MapLocationFromContactsActivity extends Activity {
         // the request code is what we're expecting.
         if (resultCode == Activity.RESULT_OK
                 && requestCode == PICK_CONTACT_REQUEST) {
-
-            // Initialize contactData intent for use later if permission not granted
-            contactData = data;
 
             // Create a Runnable so the (potentially) long-duration
             // getAddressFromContact() method can run without blocking

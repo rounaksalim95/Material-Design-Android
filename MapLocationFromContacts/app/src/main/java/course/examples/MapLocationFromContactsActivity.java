@@ -23,34 +23,41 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+
 /**
  * An Activity that maps a location from an address of a contact.
  */
 public class MapLocationFromContactsActivity extends Activity {
+
     /**
      * Debugging tag used by the Android logger.
      */
     private String TAG = getClass().getSimpleName();
+
 
     /**
      * A "code" that identifies the request.
      */
     private static final int PICK_CONTACT_REQUEST = 0;
 
+
     /**
      *  Request code for READ_CONTACTS.
      */
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 1;
+
 
     /**
      * Intent to hold data that comes from contact
      */
     private static Intent contactData;
 
+
     /**
      * Holds reference to the floating action button for animations
      */
     private static ImageButton mAddButton;
+
 
     /**
      * Hook method called when a new instance of Activity is created.
@@ -67,27 +74,13 @@ public class MapLocationFromContactsActivity extends Activity {
         // Set the default layout.
         setContentView(R.layout.main);
 
+        // Create a reference to the add FAB
         mAddButton = (ImageButton) findViewById(R.id.addButton);
 
+        //Sets up the slide animation upon the exit of the main activity
         setupWindowAnimations();
     }
 
-    private void setupWindowAnimations() {
-        /*Explode explode = new Explode();
-        explode.setDuration(1000);
-        getWindow().setExitTransition(explode);*/
-
-        Slide slide = new Slide();
-        slide.setDuration(1000);
-        getWindow().setExitTransition(slide);
-
-        /*Fade fade = new Fade();
-        fade.setDuration(3000);
-        getWindow().setExitTransition(fade);*/
-
-        /*Fade fade = (Fade) TransitionInflater.from(this).inflateTransition(R.transition.activity_fade);
-        getWindow().setExitTransition(fade);*/
-    }
 
     /**
      * Hook method called after onCreate() or after onRestart() (when
@@ -101,6 +94,7 @@ public class MapLocationFromContactsActivity extends Activity {
         super.onStart();
         Log.i(TAG, "The activity is about to become visible.");
     }
+
 
     /**
      * Hook method called after onRestoreStateInstance(Bundle) only if
@@ -117,6 +111,7 @@ public class MapLocationFromContactsActivity extends Activity {
         Log.i(TAG, "The activity has become visible (it is now \"resumed\")");
     }
 
+
     /**
      * Hook method called when an Activity loses focus but is still
      * visible in background. May be followed by onStop() or
@@ -132,6 +127,7 @@ public class MapLocationFromContactsActivity extends Activity {
                 "Another activity is taking focus (this activity is about to be \"paused\")");
     }
 
+
     /**
      * Called when Activity is no longer visible.  Release resources
      * that may cause memory leak. Save instance state
@@ -142,6 +138,7 @@ public class MapLocationFromContactsActivity extends Activity {
         super.onStop();
         Log.i(TAG, "The activity is no longer visible (it is now \"stopped\")");
     }
+
 
     /**
      * Hook method called when user restarts a stopped activity.  Is
@@ -155,6 +152,7 @@ public class MapLocationFromContactsActivity extends Activity {
         Log.d(TAG, "The activity is about to be restarted()");
     }
 
+
     /**
      * Hook method that gives a final chance to release resources and
      * stop spawned threads.  onDestroy() may not always be
@@ -165,6 +163,7 @@ public class MapLocationFromContactsActivity extends Activity {
         super.onDestroy();
         Log.i(TAG, "The activity is about to be destroyed.");
     }
+
 
     /**
      * Called by the Android Activity framework when the user clicks
@@ -190,11 +189,11 @@ public class MapLocationFromContactsActivity extends Activity {
             Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(this).toBundle();
             startActivityForResult(intent,
                     PICK_CONTACT_REQUEST, bundle);
-            // overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     /**
      * Hook method called back by the Android Activity framework when
@@ -206,12 +205,15 @@ public class MapLocationFromContactsActivity extends Activity {
     protected void onActivityResult(int requestCode,
                                     int resultCode,
                                     final Intent data) {
+
         // Check if the started Activity completed successfully and
         // the request code is what we're expecting.
         if (resultCode == Activity.RESULT_OK
                 && requestCode == PICK_CONTACT_REQUEST) {
+
             // Initialize contactData intent for use later if permission not granted
             contactData = data;
+
             // Create a Runnable so the (potentially) long-duration
             // getAddressFromContact() method can run without blocking
             // the UI Thread.
@@ -224,16 +226,6 @@ public class MapLocationFromContactsActivity extends Activity {
         }
     }
 
-    public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                displayMap(contactData);
-            } else {
-                Toast.makeText(this, "Permission to read contact data was not given.",
-                        Toast.LENGTH_LONG).show();
-            }
-        }
-    }
 
     /**
      * Method that displays the map after gaining READ_CONTACTS permission from the user.
@@ -281,10 +273,12 @@ public class MapLocationFromContactsActivity extends Activity {
         // and launch the appropriate Activity to display the
         // address.
         new Thread(getAndDisplayAddressFromContact).start();
+
         // BTW, if you don't want to use a separate Thread just
         // say:
         // getAndDisplayAddressFromContact.run();
     }
+
 
     /**
      * Extracts a street address from the Uri of the contact in the
@@ -323,6 +317,7 @@ public class MapLocationFromContactsActivity extends Activity {
                 where,
                 whereParameters,
                 null)) {
+
             // Start the cursor at the beginning.
             addrCursor.moveToFirst();
 
@@ -333,6 +328,7 @@ public class MapLocationFromContactsActivity extends Activity {
                                     CommonDataKinds.
                                     StructuredPostal.
                                     STREET));
+
             // Extract the city name.
             String city = addrCursor
                     .getString(addrCursor
@@ -340,6 +336,7 @@ public class MapLocationFromContactsActivity extends Activity {
                                     CommonDataKinds.
                                     StructuredPostal.
                                     CITY));
+
             // Extract the state.
             String state = addrCursor
                     .getString(addrCursor
@@ -347,6 +344,7 @@ public class MapLocationFromContactsActivity extends Activity {
                                     CommonDataKinds.
                                     StructuredPostal.
                                     REGION));
+
             // Extract the zip code.
             String postalCode = addrCursor
                     .getString(addrCursor
@@ -354,6 +352,7 @@ public class MapLocationFromContactsActivity extends Activity {
                                     CommonDataKinds.
                                     StructuredPostal.
                                     POSTCODE));
+
             // Create an address from the various pieces obtained
             // above.
             String address =
@@ -370,6 +369,7 @@ public class MapLocationFromContactsActivity extends Activity {
         }
     }
 
+
     /**
      * Factory method that returns an Intent that designates the "Map"
      * app.
@@ -382,6 +382,7 @@ public class MapLocationFromContactsActivity extends Activity {
                         + address));
     }
 
+
     /**
      * Factory method that returns an Intent that designates the
      * "Browser" app.
@@ -392,5 +393,15 @@ public class MapLocationFromContactsActivity extends Activity {
         return new Intent(Intent.ACTION_VIEW,
                 Uri.parse("http://maps.google.com/?q="
                         + address));
+    }
+
+
+    /**
+     * Sets up the slide animation upon the exit of main activity
+     */
+    private void setupWindowAnimations() {
+        Slide slide = new Slide();
+        slide.setDuration(1000);
+        getWindow().setExitTransition(slide);
     }
 }

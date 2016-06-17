@@ -20,6 +20,7 @@ import android.widget.ImageButton;
  * An Activity that maps a location from an address given by the user.
  */
 public class MapLocationActivity extends Activity {
+
     /**
      * Debugging tag used by the Android logger.
      */
@@ -27,13 +28,7 @@ public class MapLocationActivity extends Activity {
 
 
     /**
-     * Address entered by the user.
-     */
-    private EditText mAddrText;
-
-
-    /**
-     * Holds a reference to the EditText
+     * Holds a reference to the EditText where the user adds the address
      */
     private EditText mEditTextReveal;
 
@@ -168,7 +163,7 @@ public class MapLocationActivity extends Activity {
     public void showMap() {
         try {
             // Get the address entered by the user.
-            String address = mAddrText.getText().toString();
+            String address = mEditTextReveal.getText().toString();
 
             // Replace spaces (' ') with '+' signs to make the browser
             // happy.
@@ -265,7 +260,7 @@ public class MapLocationActivity extends Activity {
         InputMethodManager mgr =
                 (InputMethodManager) getSystemService
                         (Context.INPUT_METHOD_SERVICE);
-        mgr.hideSoftInputFromWindow(mAddrText.getWindowToken(),
+        mgr.hideSoftInputFromWindow(mEditTextReveal.getWindowToken(),
                 0);
     }
 

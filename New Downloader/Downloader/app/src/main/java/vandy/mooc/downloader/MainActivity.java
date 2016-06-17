@@ -10,14 +10,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.URLUtil;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -28,6 +31,7 @@ import android.widget.Toast;
  */
 public class MainActivity
         extends ActivityBase {
+
     /**
      * A value that uniquely identifies the request to download an
      * image.
@@ -126,6 +130,22 @@ public class MainActivity
         // Set appropriate booleans for visibility of EditText and FloatingActionButton
         isEditTextVisible = false;
         isDownloadFabVisible = false;
+
+        // Set a listener to help display download FAB when the user hits enter
+        mUrlEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                        actionId == EditorInfo.IME_ACTION_DONE ||
+                        event.getAction() == KeyEvent.ACTION_DOWN &&
+                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    hideKeyboard(MainActivity.this, mUrlEditText.getWindowToken());
+                    showFab(mDownloadFab);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
 
@@ -325,7 +345,7 @@ public class MainActivity
                     AnimationUtils.loadAnimation(this, animRedId));
 
             // Displays the download FAB
-            showFab(mDownloadFab);
+            // showFab(mDownloadFab);
 
         } else {
             hideEditText(mUrlEditText);

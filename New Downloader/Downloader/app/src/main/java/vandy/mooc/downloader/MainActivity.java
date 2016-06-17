@@ -325,7 +325,7 @@ public class MainActivity
                     AnimationUtils.loadAnimation(this, animRedId));
 
             // Displays the download FAB
-            animateFab(mDownloadFab);
+            showFab(mDownloadFab);
 
         } else {
             hideEditText(mUrlEditText);
@@ -336,6 +336,9 @@ public class MainActivity
             // Load and start the animation
             mAddFab.startAnimation(
                     AnimationUtils.loadAnimation(this, animRedId));
+
+            // Hides the download FAB
+            hideFab(mDownloadFab);
         }
     }
 
@@ -383,11 +386,24 @@ public class MainActivity
      * FAB animator that displays the FAB
      * @param fab The FAB to be displayed
      */
-    private void animateFab(FloatingActionButton fab) {
+    private void showFab(FloatingActionButton fab) {
         fab.show();
         fab.animate()
                 .translationY(0)
                 .setInterpolator(new DecelerateInterpolator(2))
                 .start();
+    }
+
+
+    /**
+     * FAB animator that hides the FAB
+     * @param fab The FAB to be hidden
+     */
+    private void hideFab (FloatingActionButton fab) {
+        fab.hide();
+        fab.animate().
+                translationY(fab.getHeight() + 100).
+                setInterpolator(new AccelerateInterpolator(2)).
+                start();
     }
 }

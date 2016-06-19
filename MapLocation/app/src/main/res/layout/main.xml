@@ -33,9 +33,6 @@
             android:elevation="1dp"
             android:src="@drawable/icon_add"
             android:onClick="addAddress"/>
-
     </LinearLayout>
-
-
 </LinearLayout>
 

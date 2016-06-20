@@ -99,7 +99,9 @@ public class DownloadImageActivity
                                 + pathToImage);
 
                 // Set the result of the Activity.
-                setActivityResult(pathToImage);
+                UiUtils.setActivityResult(this,
+                                          pathToImage,
+                                          null);
 
                 // Stop the Activity from running and return.
                 finish();
@@ -153,7 +155,9 @@ public class DownloadImageActivity
                                     (Uri) mRetainedFragmentManager.get(URL));
 
                     // Set the result of the Activity.
-                    setActivityResult(imagePath);
+                    UiUtils.setActivityResult(DownloadImageActivity.this,
+                                              imagePath,
+                                              "download failed");
 
                     // Run finish() on the UI Thread.
                     DownloadImageActivity.this.runOnUiThread(new Runnable() {
@@ -195,25 +199,5 @@ public class DownloadImageActivity
 
         // Dismiss the progress bar.
         mLoadingProgressBar.setVisibility(View.INVISIBLE);
-    }
-
-    /**
-     * Set the result of the Activity to indicate whether the image
-     * operation succeeded or not.
-     *
-     * @param pathToImage
-     *          The pathname to the image file.
-     */
-    private void setActivityResult(Uri pathToImage) {
-        if (pathToImage == null)
-            // Indicate the image operation was unsuccessful or was
-            // cancelled.
-            setResult(RESULT_CANCELED);
-        else
-            // Set the result of the Activity to designate the path to
-            // the image file resulting from a successful operation.
-            setResult(RESULT_OK,
-                    new Intent("",
-                            pathToImage));
     }
 }

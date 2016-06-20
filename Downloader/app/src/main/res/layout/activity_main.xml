@@ -1,107 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
+    <TextView android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:text="@string/defaultURL"
-        android:gravity="center" />
+        android:textSize="24dp"
+        android:text="Please touch the floating button to add an address"
+        android:gravity="center"
+        android:layout_marginTop="7dp"/>
 
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:gravity="bottom">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <EditText android:id="@+id/url"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Please touch the floating action button to enter a URL."
-            android:textSize="24dp"
-            android:gravity="center"/>
-
-        <EditText
-            android:id="@+id/url"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:inputType="text|textMultiLine|textUri"
             android:hint="@string/enter_url"
-            android:ems="10" />
+            android:singleLine="true"/>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/add_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:src="@android:drawable/ic_input_add"
-            android:tint="@android:color/white"
-            android:layout_gravity="end"
-            android:onClick="downloadImage"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/download_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin"
+                android:src="@android:drawable/stat_sys_download"
+                android:tint="@android:color/white"
+                android:layout_alignParentLeft="true"
+                android:onClick="downloadImage"/>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/add_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_input_add"
+                android:tint="@android:color/white"
+                android:layout_marginLeft="@dimen/fab_margin"
+                android:layout_marginRight="@dimen/fab_margin"
+                android:layout_marginBottom="20dp"
+                android:layout_alignTop="@+id/download_fab"
+                android:layout_alignParentEnd="true"
+                android:onClick="addUrl"/>
+
+        </RelativeLayout>
 
     </LinearLayout>
 
+
 </LinearLayout>
--->
 
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".MainActivity">
-
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </android.support.design.widget.AppBarLayout>
-
-    <vandy.mooc.assignments.framework.views.InputPanelView
-        android:id="@+id/input_panel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:background="@color/input_panel_view_background_color"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"/>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_input_add"
-        android:tint="@android:color/white"
-        app:layout_anchor="@id/input_panel"
-        app:layout_anchorGravity="top|end" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/download_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/stat_sys_download"
-        android:tint="@android:color/white"
-        android:onClick="downloadImage"
-        app:layout_anchor="@id/input_panel"
-        app:layout_anchorGravity="top|start" />
-
-</android.support.design.widget.CoordinatorLayout>

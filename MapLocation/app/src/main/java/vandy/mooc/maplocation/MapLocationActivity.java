@@ -143,7 +143,9 @@ z
 
         // @@ Rounak, please document what this is doing.
         if (mIsEditTextVisible) {
-            hideEditText(mEditTextReveal);
+            UiUtils.hideEditText(mEditTextReveal);
+            mIsEditTextVisible = false;
+
             mAddButton.setImageResource(R.drawable.icon_morph_reverse);
             mAnimatable = (Animatable) (mAddButton).getDrawable();
             mAnimatable.start();
@@ -151,62 +153,13 @@ z
             // Show the map.
             showMap();
         } else {
-            revealEditText(mEditTextReveal);
+            UiUtils.revealEditText(mEditTextReveal);
+            mIsEditTextVisible = true;
+
             mEditTextReveal.requestFocus();
             mAddButton.setImageResource(R.drawable.icon_morph);
             mAnimatable = (Animatable) (mAddButton).getDrawable();
             mAnimatable.start();
         }
-    }
-
-    /**
-     * Reveals the EditText.
-     * @param text EditText to be revealed
-     */
-    public void revealEditText (EditText text) {
-        int cx = text.getRight() - 30;
-        int cy = text.getBottom() - 60;
-        int finalRadius = Math.max(text.getWidth(), 
-                                   text.getHeight());
-
-        // @@ Rounak, please document what this is doing.
-        Animator anim = 
-            ViewAnimationUtils.createCircularReveal(text,
-                                                    cx,
-                                                    cy,
-                                                    0,
-                                                    finalRadius);
-        text.setVisibility(View.VISIBLE);
-        mIsEditTextVisible = true;
-        anim.start();
-    }
-
-    /**
-     * Hides the EditText
-     * @param text EditText to be hidden.
-     */
-    public void hideEditText(final EditText text) {
-        int cx = text.getRight() - 30;
-        int cy = text.getBottom() - 60;
-        int initialRadius = text.getWidth();
-        // @@ Rounak, please document what this is doing.
-        Animator anim =
-            ViewAnimationUtils.createCircularReveal(text,
-                                                    cx,
-                                                    cy,
-                                                    initialRadius,
-                                                    0);
-
-        // @@ Rounak, please document what this is doing.
-        anim.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                text.setVisibility(View.INVISIBLE);
-            }
-        });
-
-        mIsEditTextVisible = false;
-        anim.start();
     }
 }

@@ -1,12 +1,20 @@
 package vandy.mooc.downloader;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.Looper;
+import android.support.design.widget.FloatingActionButton;
+import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.Locale;
@@ -164,7 +172,7 @@ public class UiUtils {
                                    text.getHeight());
 
         // @@ Rounak, please document what this is doing.
-        Animator anim = 
+        Animator anim =
             ViewAnimationUtils.createCircularReveal(text,
                                                     cx,
                                                     cy,

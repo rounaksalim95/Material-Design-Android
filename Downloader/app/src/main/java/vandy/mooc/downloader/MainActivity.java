@@ -1,21 +1,17 @@
 package vandy.mooc.downloader;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
+import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.inputmethod.InputMethodManager;
+import android.view.inputmethod.EditorInfo;
 import android.webkit.URLUtil;
 import android.widget.EditText;
-import android.widget.Toast;
-
-import vandy.mooc.downloader.framework.views.InputPanelView;
+import android.widget.TextView;
 
 /**
  * A main Activity that prompts the user for a URL to an image and
@@ -23,8 +19,7 @@ import vandy.mooc.downloader.framework.views.InputPanelView;
  * view it.
  */
 public class MainActivity
-        extends ActivityBase
-        implements InputPanelView.InputListener {
+       extends ActivityBase {
     /**
      * A value that uniquely identifies the request to download an
      * image.
@@ -53,15 +48,29 @@ public class MainActivity
      * doesn't specify otherwise.
      */
     private final static String mDefaultUrl =
-            "http://www.dre.vanderbilt.edu/~schmidt/robot.png";
+        "http://www.dre.vanderbilt.edu/~schmidt/robot.png";
 
-    private String enteredUrl;
-
-    private InputPanelView mInputPanel;
-
+    /**
+     * Reference to add floating action button
+     */
     private FloatingActionButton mAddFab;
 
+    /**
+     * Reference to download floating action button
+     */
     private FloatingActionButton mDownloadFab;
+
+    /**
+     * Keeps track of whether the edit text is visible for the user to
+     * enter a URL.
+     */
+    private boolean mIsEditTextVisible = false;
+
+    /**
+     * Keeps track of whether the download button is visible for the
+     * user to download an image.
+     */
+    private boolean mIsDownloadFabVisible = false;
 
     /**
      * Hook method called when a new instance of Activity is
@@ -75,59 +84,57 @@ public class MainActivity
     protected void onCreate(Bundle savedInstanceState) {
         // Always call super class for necessary
         // initialization/implementation.
-        // TODO -- you fill in here.
         super.onCreate(savedInstanceState);
 
         // Set the default layout.
-        // TODO -- you fill in here.
         setContentView(R.layout.activity_main);
 
-        /*// Cache the EditText that holds the urls entered by the
+        // Initialize the views.
+        initializeViews();
+    }
+
+    /**
+     * Initialize the views.
+     */
+    private void initializeViews() {
+        // Cache the EditText that holds the urls entered by the
         // user (if any).
-        // TODO -- you fill in here.
-        mUrlEditText = (EditText) findViewById(R.id.url);*/
+        mUrlEditText = (EditText) findViewById(R.id.url);
 
-        mInputPanel = (InputPanelView) findViewById(R.id.input_panel);
+        // Cache floating action button that adds a URL.
+        mAddFab =
+            (FloatingActionButton) findViewById(R.id.add_fab);
 
-        mAddFab = (FloatingActionButton) findViewById(R.id.add_fab);
-        assert mAddFab != null;
-        mAddFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showInputPanel(!mInputPanel.isPanelShown());
-            }
-        });
+        // Cache floating action button that downloads an image.
+        mDownloadFab =
+            (FloatingActionButton) findViewById(R.id.download_fab);
 
-        mDownloadFab = (FloatingActionButton) findViewById(R.id.download_fab);
-    }
+        // Make the EditText invisible for animation purposes
+        mUrlEditText.setVisibility(View.INVISIBLE);
 
-    public void showInputPanel(boolean show) {
-        if (show != mInputPanel.isPanelShown()) {
-            mInputPanel.show(show);
+        // Make the download button invisible for animation purposes
+        mDownloadFab.setVisibility(View.INVISIBLE);
 
-            // Rotate FAB from + to x or from x to +.
-            int animResId = show
-                            ? R.anim.fab_rotate_forward
-                    : R.anim.fab_rotate_backward;
-
-            // Load and start the animation.
-            mAddFab.startAnimation(
-                    AnimationUtils.loadAnimation(this, animResId));
-        }
-    }
-
-    public void onInputReceived(String text) {
-        if (!text.isEmpty()) {
-            // Save the entered Url
-            enteredUrl = text;
-        }
-
-        // Hide the input panel.
-        showInputPanel(false);
-    }
-
-    public void onInputCancelled() {
-        showInputPanel(false);
+        // Register a listener to help display download FAB when the user
+        // hits enter.
+        mUrlEditText.setOnEditorActionListener
+            (new TextView.OnEditorActionListener() {
+                 @Override
+                 public boolean onEditorAction(TextView v,
+                                               int actionId,
+                                               KeyEvent event) {
+                     if (actionId == EditorInfo.IME_ACTION_SEARCH 
+                         || actionId == EditorInfo.IME_ACTION_DONE 
+                         || event.getAction() == KeyEvent.ACTION_DOWN 
+                         && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                         UiUtils.hideKeyboard(MainActivity.this,
+                                              mUrlEditText.getWindowToken());
+                         UiUtils.showFab(mDownloadFab);
+                         return true;
+                     } else
+                         return false;
+                 }
+            });
     }
 
     /**
@@ -140,12 +147,12 @@ public class MainActivity
     public void downloadImage(View view) {
         try {
             // Hide the keyboard.
-            hideKeyboard(this, mUrlEditText.getWindowToken());
+            UiUtils.hideKeyboard(this,
+                                 mUrlEditText.getWindowToken());
 
             // Call startDownloadImageActivity() to create a new
             // Intent and start an Activity that downloads an image
             // from the URL given by the user.
-            // TODO - you fill in here.
             startDownloadImageActivity(getUrl());
         } catch (Exception e) {
             e.printStackTrace();
@@ -162,34 +169,29 @@ public class MainActivity
         // Make sure there's a non-null URL.
         if (url != null) {
             // Make sure that there's not already a download in progress.
-            // TODO -- you fill in here, replacing "true" with the
-            // proper code.
             if (mProcessButtonClick == false)
-                showToast(this,
-                        "Already downloading image "
-                                + url);
-                // Do a sanity check to ensure the URL is valid.
-                // TODO -- you fill in here, replacing "true" with the
-                // proper code.
+                UiUtils.showToast(this,
+                                  "Already downloading image "
+                                  + url);
+            // Do a sanity check to ensure the URL is valid.
             else if (!URLUtil.isValidUrl(url.toString()))
-                showToast(this,
-                        "Invalid URL "
-                                + url.toString());
+                UiUtils.showToast(this,
+                                  "Invalid URL "
+                                  + url.toString());
             else {
                 // Disable processing of a button click.
                 mProcessButtonClick = false;
 
                 // Make an intent to download the image.
                 final Intent intent =
-                        makeDownloadImageIntent(url);
+                    makeDownloadImageIntent(url);
 
                 // Start the Activity associated with the Intent,
                 // which will download the image and then return the
                 // Uri for the downloaded image file via the
                 // onActivityResult() hook method.
-                // TODO -- you fill in here.
                 startActivityForResult(intent,
-                        DOWNLOAD_IMAGE_REQUEST);
+                                       DOWNLOAD_IMAGE_REQUEST);
             }
         }
     }
@@ -199,10 +201,8 @@ public class MainActivity
      */
     private Intent makeDownloadImageIntent(Uri url) {
         // Create an intent that will download the image from the web.
-        // TODO -- you fill in here, replacing "null" with the proper
-        // code.
         return new Intent(DownloadImageActivity.ACTION_DOWNLOAD_IMAGE,
-                url);
+                          url);
     }
 
     /**
@@ -212,11 +212,10 @@ public class MainActivity
     private Intent makeGalleryIntent(String pathToImageFile) {
         // Create an intent that will start the Gallery app to view
         // the image.
-        // TODO -- you fill in here, replacing "null" with the proper
-        // code.
         return new Intent(Intent.ACTION_VIEW).
-                setDataAndType(Uri.parse("file://" + pathToImageFile),
-                        "image/*");
+            setDataAndType(Uri.parse("file://" 
+                                     + pathToImageFile),
+                           "image/*");
     }
 
     /**
@@ -230,40 +229,68 @@ public class MainActivity
                                     int resultCode,
                                     Intent data) {
         // Check if the started Activity completed successfully.
-        // TODO -- you fill in here, replacing true with the right
-        // code.
         if (resultCode == Activity.RESULT_OK) {
             // Check if the request code is what we're expecting.
-            // TODO -- you fill in here, replacing true with the
-            // right code.
             if (requestCode == DOWNLOAD_IMAGE_REQUEST) {
                 // Call the makeGalleryIntent() factory method to
                 // create an Intent that will launch the "Gallery" app
                 // by passing in the path to the downloaded image
                 // file.
-                // TODO -- you fill in here.
                 final Intent intent =
-                        makeGalleryIntent(data.getDataString());
+                    makeGalleryIntent(data.getDataString());
 
                 // Allow user to click the download button again.
                 mProcessButtonClick = true;
 
                 // Start the Gallery Activity.
-                // TODO -- you fill in here.
                 startActivity(intent);
             }
         }
         // Check if the started Activity did not complete successfully
         // and inform the user a problem occurred when trying to
         // download contents at the given URL.
-        // TODO -- you fill in here, replacing true with the right
-        // code.
-        else if (resultCode == Activity.RESULT_CANCELED) {
-            showToast(this, "failed to download " + getUrl().toString());
-        }
+        else if (resultCode == Activity.RESULT_CANCELED) 
+            UiUtils.showToast(this,
+                              "failed to download " 
+                              + getUrl().toString());
 
         // Enable processing of a button click again.
         mProcessButtonClick = true;
+    }
+
+    /**
+     * Called by the Android Activity framework when the user clicks +
+     * floating action button.
+     * @param view The view
+     */
+    public void addUrl(View view) {
+        // @@ Rounak, please document what this code is doing.
+        if (mIsEditTextVisible) {
+            UiUtils.hideEditText(mUrlEditText);
+            mIsEditTextVisible = false;
+
+            // Rotate the FAB from 'x' to '+'.
+            int animRedId = R.anim.fab_rotate_backward;
+
+            // Load and start the animation.
+            mAddFab.startAnimation(AnimationUtils.loadAnimation(this,
+                                                                animRedId));
+            // Hides the download FAB.
+            UiUtils.hideFab(mDownloadFab);
+        } else {
+            UiUtils.revealEditText(mUrlEditText);
+            mIsEditTextVisible = true;
+            mUrlEditText.requestFocus();
+
+            // Rotate the FAB from + to 'x'.
+            int animRedId = R.anim.fab_rotate_forward;
+
+            // Load and start the animation.
+            mAddFab.startAnimation(AnimationUtils.loadAnimation(this,
+                                                                animRedId));
+
+            // Displays the download FAB showFab(mDownloadFab);
+        }
     }
 
     /**
@@ -278,25 +305,5 @@ public class MainActivity
             userInput = mDefaultUrl;
 
         return Uri.parse(userInput);
-    }
-
-    /**
-     * This method is used to hide a keyboard after a user has
-     * finished typing the url.
-     */
-    public void hideKeyboard(Activity activity, IBinder windowToken) {
-        InputMethodManager mgr = (InputMethodManager) activity
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        mgr.hideSoftInputFromWindow(windowToken, 0);
-    }
-
-    /**
-     * Show a toast message.
-     */
-    public static void showToast(Context context,
-                                 String message) {
-        Toast.makeText(context,
-                message,
-                Toast.LENGTH_SHORT).show();
     }
 }

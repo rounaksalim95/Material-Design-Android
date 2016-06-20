@@ -26,7 +26,8 @@ public class DownloadUtils {
     /**
      * Used for debugging.
      */
-    private final static String TAG = "DownloadUtils";
+    private final static String TAG = 
+        DownloadUtils.class.getCanonicalName();
     
     /**
      * Download the image located at the provided Internet url using

@@ -264,12 +264,15 @@ public class MainActivity
      * @param view The view
      */
     public void addUrl(View view) {
-        // @@ Rounak, please document what this code is doing.
+        // Check whether the EditText is visible to determine
+        // the kind of animations to use.
         if (mIsEditTextVisible) {
+            // Hide the EditText using circular reveal animation
+            // and set boolean to false.
             UiUtils.hideEditText(mUrlEditText);
             mIsEditTextVisible = false;
 
-            // Rotate the FAB from 'x' to '+'.
+            // Rotate the FAB from 'X' to '+'.
             int animRedId = R.anim.fab_rotate_backward;
 
             // Load and start the animation.
@@ -278,18 +281,18 @@ public class MainActivity
             // Hides the download FAB.
             UiUtils.hideFab(mDownloadFab);
         } else {
+            // Hide the EditText using circular reveal animation
+            // and set boolean to true.
             UiUtils.revealEditText(mUrlEditText);
             mIsEditTextVisible = true;
             mUrlEditText.requestFocus();
 
-            // Rotate the FAB from + to 'x'.
+            // Rotate the FAB from + to 'X'.
             int animRedId = R.anim.fab_rotate_forward;
 
             // Load and start the animation.
             mAddFab.startAnimation(AnimationUtils.loadAnimation(this,
                                                                 animRedId));
-
-            // Displays the download FAB showFab(mDownloadFab);
         }
     }
 

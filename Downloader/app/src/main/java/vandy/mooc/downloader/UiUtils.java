@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
+
 /**
  * Helper methods shared by various Activities.
  */
@@ -48,6 +49,7 @@ public class UiUtils {
             return input.toUpperCase(Locale.ENGLISH);
     }
 
+
     /**
      * Show a toast message.
      */
@@ -57,6 +59,7 @@ public class UiUtils {
                        message,
                        Toast.LENGTH_SHORT).show();
     }
+
 
     /**
      * This method is used to hide a keyboard after a user has
@@ -69,11 +72,12 @@ public class UiUtils {
             (Context.INPUT_METHOD_SERVICE);
         mgr.hideSoftInputFromWindow(windowToken, 0);
     }
-        
+
+
     /**
      * Set the result of the Activity to indicate whether the
      * operation on the content succeeded or not.
-     * 
+     *
      * @param activity
      *          The Activity whose result is being set.
      * @param pathToContent
@@ -101,33 +105,6 @@ public class UiUtils {
                                           pathToContent));
     }
 
-    /**
-     * Set the result of the Activity to indicate whether the
-     * operation on the content succeeded or not.
-     * 
-     * @param activity
-     *          The Activity whose result is being set.
-     * @param resultCode
-     *          The result of the Activity, i.e., RESULT_CANCELED or
-     *          RESULT_OK. 
-     * @param failureReason
-     *          String to add to add as an extra to the Intent passed
-     *          back to the originating Activity if the result of the
-     *          Activity is RESULT_CANCELED. 
-     */
-    public static void setActivityResult(Activity activity,
-                                         int resultCode,
-                                         String failureReason) {
-        if (resultCode == Activity.RESULT_CANCELED)
-            // Indicate why the operation on the content was
-            // unsuccessful or was cancelled.
-            activity.setResult(Activity.RESULT_CANCELED,
-                 new Intent("").putExtra("reason",
-                                         failureReason));
-        else 
-            // Everything is ok.
-            activity.setResult(Activity.RESULT_OK);
-    }
 
     /**
      * @return True if the caller is running on the UI thread, else
@@ -136,6 +113,7 @@ public class UiUtils {
     public static boolean runningOnUiThread() {
         return Thread.currentThread() == Looper.getMainLooper().getThread();
     }
+
 
     /**
      * FAB animator that displays the FAB.
@@ -149,6 +127,7 @@ public class UiUtils {
            .start();
     }
 
+
     /**
      * FAB animator that hides the FAB.
      * @param fab The FAB to be hidden
@@ -161,44 +140,59 @@ public class UiUtils {
            .start();
     }
 
+
     /**
      * Reveals the EditText.
      * @param text EditText to be revealed
      */
     public static void revealEditText (EditText text) {
+        // Get x and y positions of the view with a slight offset
+        // to give the illusion of reveal happening from FAB.
         int cx = text.getRight() - 30;
         int cy = text.getBottom() - 60;
-        int finalRadius = Math.max(text.getWidth(), 
-                                   text.getHeight());
 
-        // @@ Rounak, please document what this is doing.
+        // Radius gives the reveal the circular outline.
+        int finalRadius = Math.max(text.getWidth(),
+                text.getHeight());
+
+        // This creates a circular reveal that is used starting from
+        // cx and cy with a radius of 0 and then expanding to finalRadius.
         Animator anim =
-            ViewAnimationUtils.createCircularReveal(text,
-                                                    cx,
-                                                    cy,
-                                                    0,
-                                                    finalRadius);
+                ViewAnimationUtils.createCircularReveal(text,
+                        cx,
+                        cy,
+                        0,
+                        finalRadius);
         text.setVisibility(View.VISIBLE);
         anim.start();
     }
+
 
     /**
      * Hides the EditText
      * @param text EditText to be hidden.
      */
     public static void hideEditText(final EditText text) {
+        // Get x and y positions of the view with a slight offset
+        // to give the illusion of reveal happening from FAB.
         int cx = text.getRight() - 30;
         int cy = text.getBottom() - 60;
-        int initialRadius = text.getWidth();
-        // @@ Rounak, please document what this is doing.
-        Animator anim =
-            ViewAnimationUtils.createCircularReveal(text,
-                                                    cx,
-                                                    cy,
-                                                    initialRadius,
-                                                    0);
 
-        // @@ Rounak, please document what this is doing.
+        // Gets the initial radius for the circular reveal.
+        int initialRadius = text.getWidth();
+
+        // This creates a circular motion that appears to be going back into the
+        // FAB from cx and cy with the initial radius as the width and final radius
+        // as 0 since it is animating back into the FAB.
+        Animator anim =
+                ViewAnimationUtils.createCircularReveal(text,
+                        cx,
+                        cy,
+                        initialRadius,
+                        0);
+
+        // Create a listener so that we can make the EditText
+        // invisible once the circular animation is over.
         anim.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -208,7 +202,11 @@ public class UiUtils {
         });
 
         anim.start();
+
+        // Clear the text from the EditText when the user touches the X FAB
+        text.getText().clear();
     }
+
 
     /**
      * Ensure this class is only used as a utility.

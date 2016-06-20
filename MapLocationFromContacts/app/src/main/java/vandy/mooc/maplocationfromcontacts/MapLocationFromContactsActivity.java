@@ -90,7 +90,8 @@ public class MapLocationFromContactsActivity
             Intent intent = new Intent(Intent.ACTION_PICK,
                                        ContactsContract.Contacts.CONTENT_URI);
 
-            // @@ Rounak, please document what this is doing.
+            // Pass on a bundle to achieve the screen transitions used when the
+            // activity changes.
             Bundle bundle = 
                 ActivityOptions.makeSceneTransitionAnimation(this).toBundle();
 
@@ -121,9 +122,10 @@ public class MapLocationFromContactsActivity
         if (resultCode == Activity.RESULT_OK
             && requestCode == PICK_CONTACT_REQUEST) {
 
-            // @@ Rounak, the code below looks wrong - why is there an if/else clause here?
-
-            // @@ Rounak, please document what's going on here.
+            // Checks whether the build SDK version is greater than
+            // that of Android M; if it is then ask for permission to
+            // read contacts as per the changes implemented in permission
+            // requests for Android M and above.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M 
                 && checkSelfPermission(Manifest.permission.READ_CONTACTS) 
                 != PackageManager.PERMISSION_GRANTED) 

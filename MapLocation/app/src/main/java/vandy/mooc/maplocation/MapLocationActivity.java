@@ -61,7 +61,7 @@ public class MapLocationActivity
 
         // Set the default layout.
         setContentView(R.layout.main);
-z
+
         // Cache the EditText and ImageButton objects in their
         // respective fields.
         mAddButton = (ImageButton) findViewById(R.id.btn_add);
@@ -84,11 +84,6 @@ z
             // Replace spaces (' ') with '+' signs to make the browser
             // happy.
             address = address.replace(' ', '+');
-
-            // @@ Rounak, do we really need this call or is it redundant?
-            // Hide the keyboard.
-            UiUtils.hideKeyboard(this,
-                                 mEditTextReveal.getWindowToken());
 
             // Launch the activity by sending an intent.  Android will
             // choose the right one or let the user choose if more
@@ -141,11 +136,14 @@ z
     public void addAddress(View view) {
         Animatable mAnimatable;
 
-        // @@ Rounak, please document what this is doing.
+        // Check if the EditText is visible.
         if (mIsEditTextVisible) {
+            // If visible, hide the EditText and set the boolean to false.
             UiUtils.hideEditText(mEditTextReveal);
             mIsEditTextVisible = false;
 
+            // Set Image Resource to start the morph animation of the FAB icon
+            // from the tick mark to +.
             mAddButton.setImageResource(R.drawable.icon_morph_reverse);
             mAnimatable = (Animatable) (mAddButton).getDrawable();
             mAnimatable.start();
@@ -153,10 +151,15 @@ z
             // Show the map.
             showMap();
         } else {
+            // If EditText is invisible then reveal it using the animation
+            // and set boolean to true.
             UiUtils.revealEditText(mEditTextReveal);
             mIsEditTextVisible = true;
 
             mEditTextReveal.requestFocus();
+
+            // Set Image Resource to start the morph animation of the FAB icon
+            // from + to the tick mark.
             mAddButton.setImageResource(R.drawable.icon_morph);
             mAnimatable = (Animatable) (mAddButton).getDrawable();
             mAnimatable.start();

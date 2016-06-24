@@ -75,7 +75,7 @@ public class MainActivity
     /**
      * Hook method called when a new instance of Activity is
      * created. One time initialization code goes here, e.g., UI
-     * layout and some class scope variable initialization.
+     * snackbar and some class scope variable initialization.
      *
      * @param savedInstanceState
      *            object that contains saved state information.
@@ -86,7 +86,7 @@ public class MainActivity
         // initialization/implementation.
         super.onCreate(savedInstanceState);
 
-        // Set the default layout.
+        // Set the default snackbar.
         setContentView(R.layout.activity_main);
 
         // Initialize the views.

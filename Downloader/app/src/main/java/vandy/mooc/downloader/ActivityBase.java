@@ -1,17 +1,23 @@
 package vandy.mooc.downloader;
 
+import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.ViewGroup;
 
 /**
  * Super class that handles permissions.
  */
 public class ActivityBase
-       extends LifecycleLoggingActivity {
+        extends LifecycleLoggingActivity {
+    /**
+     * Available for sub-classes to set with PermissionRequest#with() call.
+     */
+    protected PermissionRequest mPermissionRequest;
+
     /**
      * Handle the onPostCreate() hook to call permission helper to handle all
      * permission requests using the API 23 permission model framework.
@@ -26,8 +32,18 @@ public class ActivityBase
      */
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        // Call permission helper to manage all API 23 permission requests.
-        PermissionUtils.onPostCreate(this, savedInstanceState);
+        // Submit a permission request to ensure that this app has the
+        // required permissions for writing and reading external storage.
+        mPermissionRequest =
+                PermissionRequest.with(this)
+                        .permissions(
+                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .rationale(R.string.permission_read_write_rationale)
+                        .granted(R.string.permission_read_write_granted)
+                        .denied(R.string.permission_read_write_denied)
+                        .snackbar((ViewGroup)findViewById(android.R.id.content))
+                        .submit();
 
         // Always call super class method.
         super.onPostCreate(savedInstanceState);
@@ -35,17 +51,19 @@ public class ActivityBase
 
     /**
      * API 23 (M) callback received when a permissions request has been
-     * completed. Redirect request to permission helper.
+     * completed. Redirect callback to permission helper.
      */
     @TargetApi(Build.VERSION_CODES.M)
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
         // Redirect hook call to permission helper method.
-        PermissionUtils.onRequestPermissionsResult(this,
-                                                   requestCode,
-                                                   permissions,
-                                                   grantResults);
+        if (mPermissionRequest != null) {
+            mPermissionRequest.onRequestPermissionsResult(
+                    requestCode, permissions, grantResults);
+            mPermissionRequest = null; // request no longer needed
+        }
     }
 }

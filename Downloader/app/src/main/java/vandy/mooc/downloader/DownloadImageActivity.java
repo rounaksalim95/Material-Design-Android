@@ -46,7 +46,7 @@ public class DownloadImageActivity
     /**
      * Hook method called when a new instance of Activity is
      * created. One time initialization code goes here, e.g., UI
-     * layout and some class scope variable initialization.
+     * snackbar and some class scope variable initialization.
      *
      * @param savedInstanceState
      *            object that contains saved state information.
@@ -61,7 +61,7 @@ public class DownloadImageActivity
         // TODO -- you fill in here.
         super.onCreate(savedInstanceState);
 
-        // Set the default layout.
+        // Set the default snackbar.
         // TODO -- you fill in here.
         setContentView(R.layout.download_image_activity);
 

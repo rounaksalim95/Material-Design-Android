@@ -73,16 +73,9 @@ public class MainActivity
     private FloatingActionButton mClearFab;
 
     /**
-     * The button to load default images.
+     * The autocompletetextview that takes in user data
      */
-    private Button mDefaultButton;
-
-    /**
-     * Long-press of mDefaultButton will toggle this boolean value,
-     * which is used to determine if local or remote default images
-     * are loaded.
-     */
-    private boolean mLocalDefaultMode;
+    private AutoCompleteTextView mInputText;
 
     /**
      * Boolean uesd to keep track so we know which addFab animation to use
@@ -154,11 +147,10 @@ public class MainActivity
             (LinearLayout) findViewById(R.id.listOfURLLists);
 
         // Cache references to the buttons
-        mDefaultButton = (Button) findViewById(R.id.runWithDefaultURLs);
         mAddFab = (FloatingActionButton) findViewById(R.id.add_fab);
-        mRunFab = (FloatingActionButton) findViewById(R.id.run_fab);
+        mRunFab = (FloatingActionButton) findViewById(R.id.run_fab);/*
         mDefaultFab = (FloatingActionButton) findViewById(R.id.defaultFab);
-        mDefaultLocalFab = (FloatingActionButton) findViewById(R.id.defaultLocalFab);
+        mDefaultLocalFab = (FloatingActionButton) findViewById(R.id.defaultLocalFab);*/
         mClearFab = (FloatingActionButton) findViewById(R.id.clearFab);
 
 
@@ -176,20 +168,10 @@ public class MainActivity
 
         // Initialize the Options singleton.
         Options.instance().parseArgs(null);
-
-        // Setup a long-click callback to toggle between local and remote
-        // url loading.
-        mDefaultButton.setOnLongClickListener(view -> {
-            mLocalDefaultMode = !mLocalDefaultMode;
-            ((Button)view).setText(getString(mLocalDefaultMode
-                                             ? R.string.default_local_button
-                                             : R.string.default_button));
-            return true;
-        });
     }
     
     /**
-     * Run the ImageStreamGang using a default set of URL lists.
+     * Run the ImageStreamGang using a default set of URL lists.           --- Not used ---
      */
     public void runWithDefaultURLs(View view) {
         //
@@ -372,7 +354,7 @@ public class MainActivity
      */
     public void showFabMenu() {
 
-        // Set up and show the default menu mini floating action button
+        /*// Set up and show the default menu mini floating action button
         FrameLayout.LayoutParams layoutParamsDefaultFab = (FrameLayout.LayoutParams) mDefaultFab.getLayoutParams();
         layoutParamsDefaultFab.rightMargin += (int) (mDefaultFab.getWidth() * 1.7);
         layoutParamsDefaultFab.bottomMargin += (int) (mDefaultFab.getHeight() * 0.25);
@@ -386,11 +368,11 @@ public class MainActivity
         layoutParamsDefaultLocalFab.bottomMargin += (int) (mDefaultLocalFab.getHeight() * 1.5);
         mDefaultLocalFab.setLayoutParams(layoutParamsDefaultLocalFab);
         mDefaultLocalFab.startAnimation(default_fab_local_show);
-        mDefaultLocalFab.setClickable(true);
+        mDefaultLocalFab.setClickable(true);*/
 
         // Set up and show the clear menu mini floating action button
         FrameLayout.LayoutParams layoutParamsClear = (FrameLayout.LayoutParams) mClearFab.getLayoutParams();
-        layoutParamsClear.rightMargin += (int) (mClearFab.getWidth() * 0.25);
+        layoutParamsClear.rightMargin += (int) (mClearFab.getWidth() * 0.19);
         layoutParamsClear.bottomMargin += (int) (mClearFab.getHeight() * 1.7);
         mClearFab.setLayoutParams(layoutParamsClear);
         mClearFab.startAnimation(clear_fab_show);
@@ -402,7 +384,7 @@ public class MainActivity
      */
     public void hideFabMenu() {
 
-        // Hide the default menu mini floating action button
+        /*// Hide the default menu mini floating action button
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mDefaultFab.getLayoutParams();
         layoutParams.rightMargin -= (int) (mDefaultFab.getWidth() * 1.7);
         layoutParams.bottomMargin -= (int) (mDefaultFab.getHeight() * 0.25);
@@ -416,11 +398,11 @@ public class MainActivity
         layoutParamsDefaultLocalFab.bottomMargin -= (int) (mDefaultLocalFab.getHeight() * 1.5);
         mDefaultLocalFab.setLayoutParams(layoutParamsDefaultLocalFab);
         mDefaultLocalFab.startAnimation(default_fab_local_hide);
-        mDefaultLocalFab.setClickable(false);
+        mDefaultLocalFab.setClickable(false)*/;
 
         // Hide the clear menu mini floating action button
         FrameLayout.LayoutParams layoutParamsClear = (FrameLayout.LayoutParams) mClearFab.getLayoutParams();
-        layoutParamsClear.rightMargin -= (int) (mClearFab.getWidth() * 0.25);
+        layoutParamsClear.rightMargin -= (int) (mClearFab.getWidth() * 0.19);
         layoutParamsClear.bottomMargin -= (int) (mClearFab.getHeight() * 1.7);
         mClearFab.setLayoutParams(layoutParamsClear);
         mClearFab.startAnimation(clear_fab_hide);
@@ -440,7 +422,7 @@ public class MainActivity
                     animRedId));
 
             // Call the addURLs method to inflate the autocompletetextview
-            addURLs(view);
+            int id = addURLs(view);
 
             // Set aAnimateX accordingly
             mAnimatetoX = false;
@@ -450,39 +432,64 @@ public class MainActivity
 
             // Reveal the mini floating action buttons menu
             showFabMenu();
+
+            // Get a reference to the autocompleteview once it is created
+            mInputText = (AutoCompleteTextView) findViewById(id);
+
+            // Setup a long-click listener for the autocompletetextview so that the user can
+            // hold down on the autocompletetextview to delete images
+            mInputText.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    showFabMenu();
+                    return false;
+                }
+            });
+
         } else {
-            // We need to rotate the other way and set mAnimateX accordingly
-            mAnimatetoX = true;
-
-            // Rotate the FAB from 'X' to '+'.
-            int animRedId = R.anim.fab_rotate_backward;
-
-            // Load and start the animation.
-            mAddFab.startAnimation(AnimationUtils.loadAnimation(this,
-                    animRedId));
-
-            clearLists(view);
-
-            // Hide mRunFab
-            hideFab(mRunFab);
-
-            // Hide the mini floating action button menu
-            hideFabMenu();
+            // Hide the add fab
+            hideAddFab(view);
         }
     }
-	
+
+    /**
+     * Hides the add fab
+     */
+    public void hideAddFab(View view) {
+        // We need to rotate the other way and set mAnimateX accordingly
+        mAnimatetoX = true;
+
+        // Rotate the FAB from 'X' to '+'.
+        int animRedId = R.anim.fab_rotate_backward;
+
+        // Load and start the animation.
+        mAddFab.startAnimation(AnimationUtils.loadAnimation(this,
+                animRedId));
+
+        clearLists(view);
+
+        // Hide mRunFab
+        hideFab(mRunFab);
+
+        // Hide the mini floating action button menu
+        hideFabMenu();
+    }
+
     /**
      * Adds a List of URLs to the ListView to allow for variable
      * number of URL Lists to process (i.e., variable number of
      * iteration cycles by the ImageStreamGang).
      */
     @SuppressLint("InflateParams")
-    public void addURLs(View view) {
+    public int addURLs(View view) {
     	// Create the new list from R.layout.list_item.
         AutoCompleteTextView newList = 
             (AutoCompleteTextView) 
             LayoutInflater.from(this).inflate (R.layout.list_item,
                                                null);
+
+        // Generate id for view so that it can be referenced later
+        newList.setId(view.generateViewId());
         
         // Set the adapter to the given suggestions.
         newList.setAdapter(mSuggestions);
@@ -491,6 +498,9 @@ public class MainActivity
         // redrawn by the framework.
         mListUrlGroups.addView(newList);
         mListUrlGroups.invalidate();
+
+        // Return the id
+        return newList.getId();
     }
     
     /**
@@ -546,13 +556,16 @@ public class MainActivity
      * Delete the previously downloaded pictures and directories.
      */
     public void clearFilterDirectories(View view) {
+        // Hide the add fab and clear the list
+        hideAddFab(view);
+
     	setButtonsEnabled(false);
 
         int deletedFiles = 0;
 
-        for (Filter filter : mFilters) 
+        for (Filter filter : mFilters)
             deletedFiles += deleteSubFolders
-                (new File(Options.instance().getDirectoryPath(), 
+                (new File(Options.instance().getDirectoryPath(),
                           filter.getName()).getAbsolutePath());
 
         setButtonsEnabled(true);
@@ -602,11 +615,20 @@ public class MainActivity
      * Called by Android framework when menu option is clicked.
      *
      * @param item Selected menu item.
-     * @return true
      */
     public void runWithDefaultURLs(MenuItem item) {
         // Record the user's menu choice.
-        //-----------------------------------------------
+        runURLs(item.getActionView(), Options.InputSource.DEFAULT);
+    }
+
+    /**
+     * Called by Android framework when menu option is clicked.
+     *
+     * @param item Selected menu item.
+     */
+    public void runWithDefaultLocal(MenuItem item) {
+        // Record the user's menu choice.
+        runURLs(item.getActionView(), Options.InputSource.DEFAULT_LOCAL);
     }
 
     /**

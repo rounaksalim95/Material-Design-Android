@@ -19,27 +19,6 @@
         android:layout_below="@id/my_toolbar"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/runWithDefaultURLs"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="runWithDefaultURLs"
-            android:text="@string/run_default_urls"
-            android:textSize="13sp"
-            android:longClickable="true"/>
-
-        <Button
-            android:id="@+id/addList"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="addURLs"
-            android:text="@string/add_urls"
-            android:textSize="13sp"/>
-
     </LinearLayout>
 
 

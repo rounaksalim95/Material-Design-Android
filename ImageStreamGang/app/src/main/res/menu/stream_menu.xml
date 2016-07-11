@@ -15,5 +15,11 @@
         <item android:id="@+id/completablefuture2"
             android:title="@string/completablefuture2"
             android:onClick="chooseStream"/>
+        <item android:id="@+id/defaultUrls"
+            android:title="@string/default_button"
+            android:onClick="runWithDefaultURLs"/>
+        <item android:id="@+id/defaultLocal"
+            android:title="@string/default_local_button"
+            android:onClick="runWithDefaultLocal"/>
     </group>
 </menu>

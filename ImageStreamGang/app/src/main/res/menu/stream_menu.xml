@@ -2,6 +2,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activities.MainActivity">
+
+    <item
+        android:id="@+id/delete_menu"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/clear_dirs"
+        app:showAsAction="ifRoom"
+        android:onClick="clearFilterDirectories"/>
+
     <group android:id="@+id/streams">
         <item android:id="@+id/sequential"
             android:title="@string/sequential"

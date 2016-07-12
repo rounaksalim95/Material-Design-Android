@@ -58,29 +58,24 @@ public class MainActivity
     private FloatingActionButton mRunFab;
 
     /**
-     * The defaults mini floating action button that appears from the bigger add fab
-     */
-    private FloatingActionButton mDefaultFab;
-
-    /**
-     * The defaults (local) mini floating action button that appears from the bigger add fab
-     */
-    private FloatingActionButton mDefaultLocalFab;
-
-    /**
      * The clear mini floating action button that appeats from the bigger add fab
      */
     private FloatingActionButton mClearFab;
 
     /**
-     * The autocompletetextview that takes in user data
-     */
-    private AutoCompleteTextView mInputText;
-
-    /**
      * Boolean uesd to keep track so we know which addFab animation to use
      */
     private boolean mAnimatetoX;
+
+    /**
+     * Menu used to show/hide menu items
+     */
+    private Menu mMenu;
+
+    /**
+     * Menu item used to show/hide delete action bar item
+     */
+    private MenuItem mDeleteIcon;
 
     /**
      * User selection for the desired stream.  Defaults to the
@@ -225,9 +220,14 @@ public class MainActivity
         if (iterator != null) {
             if (iterator.hasNext() 
                 && (inputSource != Options.InputSource.USER || !isEmpty()))
+
                 new Thread(makeImageStream(mFilters,
                                            iterator,
                                            mCompletionHook)).start();
+
+            // Make the delete menu item visible
+            menuVisible();
+
             setButtonsEnabled(false);
         } else 
             UiUtils.showToast(this,
@@ -433,23 +433,13 @@ public class MainActivity
             // Reveal the mini floating action buttons menu
             showFabMenu();
 
-            // Get a reference to the autocompleteview once it is created
-            mInputText = (AutoCompleteTextView) findViewById(id);
-
-            // Setup a long-click listener for the autocompletetextview so that the user can
-            // hold down on the autocompletetextview to delete images
-            mInputText.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    showFabMenu();
-                    return false;
-                }
-            });
-
         } else {
             // Hide the add fab
             hideAddFab(view);
         }
+
+        // Redraw the menu items on the action bar
+        this.invalidateOptionsMenu();
     }
 
     /**
@@ -473,6 +463,9 @@ public class MainActivity
 
         // Hide the mini floating action button menu
         hideFabMenu();
+
+        // Redraw the menu items on the action bar
+        this.invalidateOptionsMenu();
     }
 
     /**
@@ -572,6 +565,9 @@ public class MainActivity
         UiUtils.showToast(this,
                           deletedFiles
                           + " previously downloaded file(s) deleted");
+
+        // Redraw the menu items on the action bar
+        this.invalidateOptionsMenu();
     }
 	
     /**
@@ -597,6 +593,43 @@ public class MainActivity
         }
         currentFolder.delete();
         return deletedFiles;
+    }
+
+    /**
+     * This method checks whether there are files present that need to be deleted
+     * @return Returns a boolean indicating whether such files are present or not
+     */
+    public boolean filesPresent() {
+        int filesToDelete = 0;
+
+        for (Filter filter : mFilters)
+            filesToDelete += filesInSubDirectoriesPresent
+                    (new File(Options.instance().getDirectoryPath(),
+                            filter.getName()).getAbsolutePath());
+
+        return filesToDelete > 0;
+    }
+
+    /**
+     * A helper method that checks whether there are files to be deleted recursively
+     */
+    public int filesInSubDirectoriesPresent(String path) {
+        int filesToDelete = 0;
+        File currentFolder = new File(path);
+        File files[] = currentFolder.listFiles();
+
+        if (files == null)
+            return 0;
+
+        // Android does not allow you to delete a directory with child
+        // files, so we need to write code that handles this
+        // recursively.
+        for (File f : files) {
+            if (f.isDirectory())
+                filesToDelete += deleteSubFolders(f.toString());
+            filesToDelete++;
+        }
+        return filesToDelete;
     }
 
     /**
@@ -632,16 +665,69 @@ public class MainActivity
     }
 
     /**
+     * Clears the directories on the click of the menu item without animating the mini fab
+     */
+    public void clearFilterDirectories(MenuItem item) {
+
+        setButtonsEnabled(false);
+
+        int deletedFiles = 0;
+
+        for (Filter filter : mFilters)
+            deletedFiles += deleteSubFolders
+                    (new File(Options.instance().getDirectoryPath(),
+                            filter.getName()).getAbsolutePath());
+
+        setButtonsEnabled(true);
+        UiUtils.showToast(this,
+                deletedFiles
+                        + " previously downloaded file(s) deleted");
+
+        // Redraw the menu items on the action bar
+        this.invalidateOptionsMenu();
+    }
+
+    /**
      * Inflates the given @a menu.
      *
      * @param menu Menu to inflate.
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
+        // Cache menu
+        mMenu = menu;
+
         getMenuInflater().inflate(R.menu.stream_menu,
                                   menu);
 
         // Always call super class method.
         return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * Is called before inflating menu bar
+     * @param menu Menu to inflate
+     * @return true to inflate the menu bar or false to leave it
+     */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (filesPresent()) {
+            menu.findItem(R.id.delete_menu).setVisible(true);
+        }
+        else {
+            menu.findItem(R.id.delete_menu).setVisible(false);
+        }
+
+        return true;
+    }
+
+    /**
+     * Makes the delete menu item visible
+     */
+    public void menuVisible() {
+        mDeleteIcon = mMenu.findItem(R.id.delete_menu);
+        mDeleteIcon.setVisible(true);
+        //this.invalidateOptionsMenu();
     }
 }

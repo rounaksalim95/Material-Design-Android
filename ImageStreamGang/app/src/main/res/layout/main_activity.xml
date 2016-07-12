@@ -77,6 +77,4 @@
 
     </RelativeLayout>
 
-    <include layout="@layout/fab_layout" />
-
 </RelativeLayout>

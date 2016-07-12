@@ -437,9 +437,6 @@ public class MainActivity
             // Hide the add fab
             hideAddFab(view);
         }
-
-        // Redraw the menu items on the action bar
-        this.invalidateOptionsMenu();
     }
 
     /**
@@ -463,9 +460,6 @@ public class MainActivity
 
         // Hide the mini floating action button menu
         hideFabMenu();
-
-        // Redraw the menu items on the action bar
-        this.invalidateOptionsMenu();
     }
 
     /**
@@ -566,8 +560,8 @@ public class MainActivity
                           deletedFiles
                           + " previously downloaded file(s) deleted");
 
-        // Redraw the menu items on the action bar
-        this.invalidateOptionsMenu();
+        // Make the delete menu item invisible
+        menuInvisible();
     }
 	
     /**
@@ -683,8 +677,8 @@ public class MainActivity
                 deletedFiles
                         + " previously downloaded file(s) deleted");
 
-        // Redraw the menu items on the action bar
-        this.invalidateOptionsMenu();
+        // Make the delete menu item invisible
+        menuInvisible();
     }
 
     /**
@@ -722,6 +716,13 @@ public class MainActivity
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        item.setChecked(true);
+        chooseStream(item);
+        return super.onOptionsItemSelected(item);
+    }
+
     /**
      * Makes the delete menu item visible
      */
@@ -729,5 +730,13 @@ public class MainActivity
         mDeleteIcon = mMenu.findItem(R.id.delete_menu);
         mDeleteIcon.setVisible(true);
         //this.invalidateOptionsMenu();
+    }
+
+    /**
+     * Makes the delete menu item invisible
+     */
+    public void menuInvisible() {
+        mDeleteIcon = mMenu.findItem(R.id.delete_menu);
+        mDeleteIcon.setVisible(false);
     }
 }

@@ -1,5 +1,0 @@
-CHANGED,C:\Users\Rounak\Material_Design\Material-Design-Android\New Downloader\Downloader\app\build\intermediates\transforms\instantRun\debug\folders\4000\5\enhanced\vandy\mooc\downloader\MainActivity$override.class
-CHANGED,C:\Users\Rounak\Material_Design\Material-Design-Android\New Downloader\Downloader\app\build\intermediates\transforms\instantRun\debug\folders\4000\5\enhanced\vandy\mooc\downloader\R$id$override.class
-CHANGED,C:\Users\Rounak\Material_Design\Material-Design-Android\New Downloader\Downloader\app\build\intermediates\transforms\instantRun\debug\folders\4000\5\enhanced\vandy\mooc\downloader\DownloadImageActivity$override.class
-CHANGED,C:\Users\Rounak\Material_Design\Material-Design-Android\New Downloader\Downloader\app\build\intermediates\transforms\instantRun\debug\folders\4000\5\enhanced\android\support\design\R$id$override.class
-CHANGED,C:\Users\Rounak\Material_Design\Material-Design-Android\New Downloader\Downloader\app\build\intermediates\transforms\instantRun\debug\folders\4000\5\enhanced\com\android\tools\fd\runtime\AppPatchesLoaderImpl.class

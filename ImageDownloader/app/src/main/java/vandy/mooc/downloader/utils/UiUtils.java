@@ -1,4 +1,4 @@
-package vandy.mooc.downloader;
+package vandy.mooc.downloader.utils;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

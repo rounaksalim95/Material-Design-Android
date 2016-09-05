@@ -1,4 +1,4 @@
-package vandy.mooc.downloader;
+package vandy.mooc.downloader.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,7 +38,8 @@ public class DownloadUtils {
      * @param context	the context in which to write the file.
      * @param url       the web url.
      * 
-     * @return          the absolute path to the downloaded image file on the file system.
+     * @return the absolute path to the downloaded image file
+     *         on the file system. 
      */
     public static Uri downloadImage(Context context,
                                     Uri url) {
@@ -50,8 +51,8 @@ public class DownloadUtils {
 
         // Download the contents at the URL, which should
         // reference an image.
-        try (InputStream inputStream = 
-             (InputStream) new URL(url.toString()).getContent()) {
+        try (InputStream inputStream = (InputStream)
+             new URL(url.toString()).getContent()) {
                 // Create an output file and save the image into it.
                 return DownloadUtils.createDirectoryAndSaveFile
                     (context, inputStream, url.toString());
@@ -71,7 +72,8 @@ public class DownloadUtils {
      * @param inputStream  the Input Stream.
      * @param fileName     name of the file.
      * 
-     * @return          the absolute path to the downloaded image file on the file system.
+     * @return the absolute path to the downloaded image file
+     *         on the file system. 
      */
     private static Uri createDirectoryAndSaveFile(Context context,
                                                   InputStream inputStream,
@@ -99,7 +101,8 @@ public class DownloadUtils {
                              getTemporaryFilename(fileName));
         if (file.exists())
             file.delete();
-        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+        try (FileOutputStream outputStream =
+             new FileOutputStream(file)) {
             imageToSave.compress(Bitmap.CompressFormat.JPEG,
                                  100,
                                  outputStream);

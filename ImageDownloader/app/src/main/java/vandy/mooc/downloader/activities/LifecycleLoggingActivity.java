@@ -1,4 +1,4 @@
-package vandy.mooc.downloader;
+package vandy.mooc.downloader.activities;
 
 import android.app.Activity;
 import android.os.Bundle;

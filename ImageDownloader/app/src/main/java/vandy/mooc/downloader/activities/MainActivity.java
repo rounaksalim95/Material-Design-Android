@@ -1,4 +1,4 @@
-package vandy.mooc.downloader;
+package vandy.mooc.downloader.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,6 +16,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.File;
+
+import vandy.mooc.downloader.R;
+import vandy.mooc.downloader.utils.UiUtils;
+import vandy.mooc.downloader.utils.UriUtils;
 
 /**
  * A main Activity that prompts the user for a URL to an image and
@@ -191,11 +195,11 @@ public class MainActivity
     private Intent makeGalleryIntent(String pathToImageFile) {
         // Create an intent that will start the Gallery app to view
         // the image.
-        return UriUtils.buildFileProviderReadUriIntent(
-            this,
-            Uri.fromFile(new File(pathToImageFile)),
-            Intent.ACTION_VIEW,
-            "image/*");
+        return UriUtils
+            .buildFileProviderReadUriIntent(this,
+                                            Uri.fromFile(new File(pathToImageFile)),
+                                            Intent.ACTION_VIEW,
+                                            "image/*");
     }
 
     /**

@@ -1,4 +1,4 @@
-package vandy.mooc.downloader;
+package vandy.mooc.downloader.utils;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import vandy.mooc.downloader.R;
 
 /**
  * Support methods used to implement the API permission code model.

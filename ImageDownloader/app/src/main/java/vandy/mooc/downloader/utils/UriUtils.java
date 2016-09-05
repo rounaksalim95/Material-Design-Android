@@ -1,4 +1,4 @@
-package vandy.mooc.downloader;
+package vandy.mooc.downloader.utils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,8 +12,8 @@ import java.io.File;
 import java.util.List;
 
 /**
- * A utility class containing methods for creating and manipulating Uri
- * objects.
+ * A utility class containing methods for creating and manipulating
+ * Uri objects.
  */
 public class UriUtils {
     /**
@@ -35,22 +35,22 @@ public class UriUtils {
     }
 
     /**
-     * Grants the specified uri permissions to all packages that can process the
-     * intent. The most secure granting model is used for the current API. This
-     * method is designed to work on all versions of Android but has been tested
-     * only on API 23, and 24.
+     * Grants the specified uri permissions to all packages that can
+     * process the intent. The most secure granting model is used for
+     * the current API. This method is designed to work on all
+     * versions of Android but has been tested only on API 23, and 24.
      *
      * @param context     A context.
      * @param intent      An intent containing a data uri that was obtained from
      *                    FileProvider.getUriForFile().
      * @param permissions The permissions to grant.
      */
-    public static void grantUriPermissions(
-        Context context, Intent intent, int permissions) {
-
+    public static void grantUriPermissions(Context context,
+                                           Intent intent,
+                                           int permissions) {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-            // Find all packages that support this intent and grant them
-            // the specified permissions.
+            // Find all packages that support this intent and grant
+            // them the specified permissions.
             List<ResolveInfo> resInfoList =
                 context.getPackageManager().queryIntentActivities(
                     intent, PackageManager.MATCH_DEFAULT_ONLY);
@@ -68,10 +68,10 @@ public class UriUtils {
     }
 
     /**
-     * Builds an action intent and converts the passed local file uri to a
-     * content uri with read permission for all applications that can process
-     * the intent. This method is designed to work on all versions of Android
-     * but has only been tested on API 23 and 24.
+     * Builds an action intent and converts the passed local file uri
+     * to a content uri with read permission for all applications that
+     * can process the intent. This method is designed to work on all
+     * versions of Android but has only been tested on API 23 and 24.
      *
      * @param context  A context.
      * @param pathName A local file path.
@@ -79,8 +79,10 @@ public class UriUtils {
      * @param type     The intent type.
      * @return The built intent.
      */
-    public static Intent buildFileProviderReadUriIntent(
-        Context context, String pathName, String action, String type) {
+    public static Intent buildFileProviderReadUriIntent(Context context,
+                                                        String pathName,
+                                                        String action,
+                                                        String type) {
         // Build a content uri.
         Uri uri = FileProvider.getUriForFile(
             context, getFileProviderAuthority(), new File(pathName));
@@ -100,10 +102,10 @@ public class UriUtils {
     }
 
     /**
-     * Builds an action intent and converts the passed local file uri to a
-     * content uri with read permission for all applications that can process
-     * the intent. This method is designed to work on all versions of Android
-     * but has only been tested on API 23 and 24.
+     * Builds an action intent and converts the passed local file uri
+     * to a content uri with read permission for all applications that
+     * can process the intent. This method is designed to work on all
+     * versions of Android but has only been tested on API 23 and 24.
      *
      * @param context A context.
      * @param uri     A local file uri.
@@ -113,8 +115,10 @@ public class UriUtils {
      */
     public static Intent buildFileProviderReadUriIntent(
         Context context, Uri uri, String action, String type) {
-        return buildFileProviderReadUriIntent(
-            context, getPathNameFromFileUri(uri), action, type);
+        return buildFileProviderReadUriIntent(context,
+                                              getPathNameFromFileUri(uri),
+                                              action,
+                                              type);
     }
 
     /**
@@ -125,9 +129,8 @@ public class UriUtils {
      * @return The path name suitable for passing to the File class.
      */
     public static String getPathNameFromFileUri(Uri uri) {
-        if (!URLUtil.isFileUrl(uri.toString())) {
+        if (!URLUtil.isFileUrl(uri.toString())) 
             throw new IllegalArgumentException("Invalid file uri");
-        }
 
         return uri.getPath();
     }

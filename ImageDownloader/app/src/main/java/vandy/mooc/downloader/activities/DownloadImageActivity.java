@@ -1,4 +1,4 @@
-package vandy.mooc.downloader;
+package vandy.mooc.downloader.activities;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -6,6 +6,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+
+import vandy.mooc.downloader.R;
+import vandy.mooc.downloader.utils.DownloadUtils;
+import vandy.mooc.downloader.utils.RetainedFragmentManager;
+import vandy.mooc.downloader.utils.UiUtils;
 
 /**
  * An Activity that Downloads an image, stores it in a local file on

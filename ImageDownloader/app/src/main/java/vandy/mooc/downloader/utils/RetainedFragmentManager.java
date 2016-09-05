@@ -1,4 +1,4 @@
-package vandy.mooc.downloader;
+package vandy.mooc.downloader.utils;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;

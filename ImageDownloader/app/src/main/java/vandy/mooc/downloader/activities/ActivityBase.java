@@ -1,4 +1,4 @@
-package vandy.mooc.downloader;
+package vandy.mooc.downloader.activities;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -8,11 +8,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 
+import vandy.mooc.downloader.R;
+import vandy.mooc.downloader.utils.PermissionRequest;
+
 /**
  * Super class that handles permissions.
  */
 public class ActivityBase
-        extends LifecycleLoggingActivity {
+       extends LifecycleLoggingActivity {
     /**
      * Available for sub-classes to set with PermissionRequest#with() call.
      */
@@ -34,16 +37,15 @@ public class ActivityBase
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         // Submit a permission request to ensure that this app has the
         // required permissions for writing and reading external storage.
-        mPermissionRequest =
-                PermissionRequest.with(this)
-                        .permissions(
-                                Manifest.permission.READ_EXTERNAL_STORAGE,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        .rationale(R.string.permission_read_write_rationale)
-                        .granted(R.string.permission_read_write_granted)
-                        .denied(R.string.permission_read_write_denied)
-                        .snackbar((ViewGroup)findViewById(android.R.id.content))
-                        .submit();
+        mPermissionRequest = PermissionRequest
+            .with(this)
+            .permissions(Manifest.permission.READ_EXTERNAL_STORAGE,
+                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .rationale(R.string.permission_read_write_rationale)
+            .granted(R.string.permission_read_write_granted)
+            .denied(R.string.permission_read_write_denied)
+            .snackbar((ViewGroup)findViewById(android.R.id.content))
+            .submit();
 
         // Always call super class method.
         super.onPostCreate(savedInstanceState);
@@ -55,14 +57,14 @@ public class ActivityBase
      */
     @TargetApi(Build.VERSION_CODES.M)
     @Override
-    public void onRequestPermissionsResult(
-            int requestCode,
-            @NonNull String[] permissions,
-            @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         // Redirect hook call to permission helper method.
         if (mPermissionRequest != null) {
-            mPermissionRequest.onRequestPermissionsResult(
-                    requestCode, permissions, grantResults);
+            mPermissionRequest.onRequestPermissionsResult(requestCode,
+                                                          permissions,
+                                                          grantResults);
             mPermissionRequest = null; // request no longer needed
         }
     }

@@ -5,13 +5,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.webkit.URLUtil;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
 
 /**
  * A main Activity that prompts the user for a URL to an image and
@@ -187,10 +191,11 @@ public class MainActivity
     private Intent makeGalleryIntent(String pathToImageFile) {
         // Create an intent that will start the Gallery app to view
         // the image.
-        return new Intent(Intent.ACTION_VIEW).
-            setDataAndType(Uri.parse("file://" 
-                                     + pathToImageFile),
-                           "image/*");
+        return UriUtils.buildFileProviderReadUriIntent(
+            this,
+            Uri.fromFile(new File(pathToImageFile)),
+            Intent.ACTION_VIEW,
+            "image/*");
     }
 
     /**
@@ -211,22 +216,22 @@ public class MainActivity
                 // create an Intent that will launch the "Gallery" app
                 // by passing in the path to the downloaded image
                 // file.
-                final Intent intent =
-                    makeGalleryIntent(data.getDataString());
+                Intent intent =
+                        makeGalleryIntent(data.getDataString());
 
                 // Allow user to click the download button again.
                 mProcessButtonClick = true;
 
-                // Start the Gallery Activity.
+                // Start the default Android Gallery app image viewer.
                 startActivity(intent);
             }
         }
         // Check if the started Activity did not complete successfully
         // and inform the user a problem occurred when trying to
         // download contents at the given URL.
-        else if (resultCode == Activity.RESULT_CANCELED) 
+        else if (resultCode == Activity.RESULT_CANCELED)
             UiUtils.showToast(this,
-                              "failed to download " 
+                              "failed to download "
                               + getUrl().toString());
 
         // Enable processing of a button click again.
